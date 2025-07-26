@@ -13,13 +13,15 @@ $(function () {
     function play(cadena, pos,title,min) {
         $("#audio").attr("src", cadena);
         //TODO
-        //$("#audio").attr("autoplay", "");
+        $("#audio").attr("autoplay", "");
 		$("#audio")[0].currentTime = min;
 		$("#audio")[0].title = limpiaNombre(title);
         $("#titulo").remove();
         $("#audioDiv").prepend("<span data-pos='" + pos + "' id='titulo'>" + limpiaNombre(title) + "</span>");
         localStorage.setItem("_scorizer_mp3", cadena);
+        localStorage.setItem("_scorizer_pos", pos);
     	$("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
+    	$("#playLast")[0].dataset.pos = localStorage.getItem("_scorizer_pos");
         localStorage.setItem("_scorizer_title", limpiaNombre(title));
     	$("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
     	localStorage.setItem("_scorizer_time", min);    	
@@ -59,7 +61,7 @@ $(function () {
 				$("#listado").append("<h3>" + nombre + "</h3>");
 
 				var itemPos = 1;
-				var itemPos = 18;
+				var itemPos = 1;
 				//TODO cambiar el orden
 				//for (i = 0; i < items.length; i++) {
 				for (i = items.length-1; i >= 0; i--) {
@@ -123,6 +125,7 @@ $(function () {
     buscar("https://feedpress.me/sospechosos128k","Solo 128k");
 
     $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
+    $("#playLast")[0].dataset.pos = localStorage.getItem("_scorizer_pos");
     $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
     $("#playLast")[0].dataset.podcast = localStorage.getItem("_scorizer_title");
 	$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
@@ -137,7 +140,7 @@ $(function () {
   	}
 
 	$("#playLast").on("click", function (x) {
-		play(x.target.dataset.mp3, 0,x.target.dataset.podcast,x.target.dataset.min);
+		play(x.target.dataset.mp3, x.target.dataset.pos,x.target.dataset.podcast,x.target.dataset.min);
 	});
 
 	$("#play").on("click", function (x) {
@@ -151,5 +154,17 @@ $(function () {
 			}	
 		}
 	});
+
+	$('audio')[0].addEventListener('ended', function () {
+    	let audioActual = document.getElementById('titulo');
+		let valorPos = audioActual.dataset.pos;
+		let numeroPos = parseInt(valorPos, 10); // convierte a número
+		numeroPos += 1;
+		let boton = document.querySelector(`button[data-pista="${numeroPos}"]`);
+		if (boton != null) { 
+			boton.click();
+		}
+  	});
+
     setInterval(myTimer, 30000);
 });
