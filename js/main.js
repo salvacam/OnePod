@@ -36,9 +36,19 @@ $(function () {
 
                 //console.log(data);
 
-                data = new window.DOMParser().parseFromString(data, "text/xml");
+                //dataNew = new window.DOMParser().parseFromString(data, "text/xml");
 
-                const items = data.querySelectorAll("item");
+                let items = Array.from(data.querySelectorAll('item'));
+
+  				let capitulos = items.map(item => {
+    				const titulo = item.querySelector('title')?.textContent ?? 'Sin título';
+    				const url = item.querySelector('enclosure')?.getAttribute('url') ?? '';
+    				const duracion = item.querySelector('itunes\\:duration, duration')?.textContent ?? 'Desconocida';
+
+    				return { titulo, url, duracion };
+  				});
+
+  				//console.log(capitulos);
 
                 pos = 0;
                 i = 0;    
@@ -49,10 +59,10 @@ $(function () {
 				$("#listado").append("<h3>" + nombre + "</h3>");
 
 				var itemPos = 1;
-				var itemPos = 1;
+				var itemPos = 18;
 				//TODO cambiar el orden
-				for (i = 0; i < items.length; i++) {
-				//for (i = items.length-1; i >= 0; i--) {
+				//for (i = 0; i < items.length; i++) {
+				for (i = items.length-1; i >= 0; i--) {
 					//items.forEach(el => {
     				//var inicio = el.querySelector("enclosure").outerHTML.toString().indexOf('url="');
     				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
@@ -87,7 +97,7 @@ $(function () {
                     $(".botones").removeClass("none");
                     $(".botones").addClass("visto");
 
-					let escuchados = 0; //22; //TODO poner a 0 
+					let escuchados = 17; //22; //TODO poner a 0 
 					for (var i = 0; i < lista.length; i++) {
 						if (i >= escuchados) { // && i < 30) {
 
@@ -110,7 +120,7 @@ $(function () {
 		});
     }
     
-    buscar("https://anchor.fm/s/90df42ac/podcast/rss","Scorizer");
+    buscar("https://feedpress.me/sospechosos128k","Solo 128k");
 
     $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
     $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
