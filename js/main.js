@@ -62,8 +62,8 @@ $(function () {
 
 				var itemPos = 1;
 				//TODO cambiar el orden
-				//for (i = 0; i < items.length; i++) {
-				for (i = items.length-1; i >= 0; i--) {
+				for (i = 0; i < items.length; i++) {
+				//for (i = items.length-1; i >= 0; i--) {
 					//items.forEach(el => {
     				//var inicio = el.querySelector("enclosure").outerHTML.toString().indexOf('url="');
     				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
@@ -98,7 +98,7 @@ $(function () {
                     $(".botones").removeClass("none");
                     $(".botones").addClass("visto");
 
-					let escuchados = 33; //22; //TODO poner a 0 
+					let escuchados = 0; //34; //TODO poner a 0 
 					for (var i = 0; i < lista.length; i++) {
 						if (i >= escuchados) { // && i < 30) {
 
