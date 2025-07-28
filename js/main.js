@@ -25,7 +25,7 @@ $(function () {
         localStorage.setItem("_scorizer_title", limpiaNombre(title));
     	$("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
     	localStorage.setItem("_scorizer_time", min);    	
-    	$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
+    	//$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
     	window.scrollTo(0, 0);
     }
     function buscar(url, nombre) {
@@ -60,7 +60,6 @@ $(function () {
 				$("#listado").text("");
 				$("#listado").append("<h3>" + nombre + "</h3>");
 
-				var itemPos = 1;
 				var itemPos = 1;
 				//TODO cambiar el orden
 				//for (i = 0; i < items.length; i++) {
@@ -99,7 +98,7 @@ $(function () {
                     $(".botones").removeClass("none");
                     $(".botones").addClass("visto");
 
-					let escuchados = 30; //22; //TODO poner a 0 
+					let escuchados = 32; //22; //TODO poner a 0 
 					for (var i = 0; i < lista.length; i++) {
 						if (i >= escuchados) { // && i < 30) {
 
@@ -128,16 +127,24 @@ $(function () {
     $("#playLast")[0].dataset.pos = localStorage.getItem("_scorizer_pos");
     $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
     $("#playLast")[0].dataset.podcast = localStorage.getItem("_scorizer_title");
-	$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
+	//$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
 	$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
 	
 	function myTimer() {
 		if ($("#audio")[0].duration > 0) {
 			localStorage.setItem("_scorizer_time", parseInt($("#audio")[0].currentTime));
-    		$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
+    		//$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
     		$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
 		}
   	}
+
+	$("#adelante").on("click", function () {
+		$('audio')[0].currentTime = Math.min($('audio')[0].duration, $('audio')[0].currentTime + 30);
+	});
+
+	$("#atras").on("click", function () {
+		$('audio')[0].currentTime = Math.max(0, $('audio')[0].currentTime - 30);
+	});
 
 	$("#playLast").on("click", function (x) {
 		play(x.target.dataset.mp3, x.target.dataset.pos,x.target.dataset.podcast,x.target.dataset.min);
