@@ -98,7 +98,7 @@ $(function () {
                     $(".botones").removeClass("none");
                     $(".botones").addClass("visto");
 
-					let escuchados = 32; //22; //TODO poner a 0 
+					let escuchados = 33; //22; //TODO poner a 0 
 					for (var i = 0; i < lista.length; i++) {
 						if (i >= escuchados) { // && i < 30) {
 
