@@ -8,6 +8,7 @@ $(function () {
     }
     function limpiaUrl(cadena) {
         //var pos = cadena.lastIndexOf("/");
+        
         var pos = cadena.lastIndexOf("Fallo de sistema - ");
         return cadena.substring(pos + 18);
     }
