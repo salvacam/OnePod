@@ -7,8 +7,9 @@ $(function () {
     	return cadena;
     }
     function limpiaUrl(cadena) {
-        var pos = cadena.lastIndexOf("/");
-        return cadena.substring(pos + 1);
+        //var pos = cadena.lastIndexOf("/");
+        var pos = cadena.lastIndexOf("Fallo de sistema - ");
+        return cadena.substring(pos + 18);
     }
     function play(cadena, pos,title,min) {
         $("#audio").attr("src", cadena);
@@ -110,7 +111,8 @@ $(function () {
 		});
     }
     
-    buscar("https://anchor.fm/s/90df42ac/podcast/rss","Scorizer");
+    //buscar("https://anchor.fm/s/90df42ac/podcast/rss","Scorizer");
+    buscar("https://api.rtve.es/api/programas/46690/audios.rss","Fallo de sistema");
 
     $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
     $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
