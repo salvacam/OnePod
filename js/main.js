@@ -1,21 +1,26 @@
 $(function () {
+  	var nombrePodcast = "Escalofrío";
     var lista;
+
     function limpiaNombre(cadena) {
     	cadena = cadena.replace("<![CDATA[", "");
     	cadena = cadena.replace(">", "");
     	cadena = cadena.replace("]]", "");
     	return cadena;
     }
-    function limpiaUrl(cadena) {
-        //var pos = cadena.lastIndexOf("/");
-        
-        var pos = cadena.lastIndexOf("Fallo de sistema - ");
-        return cadena.substring(pos + 18);
+    
+    function limpiaUrl(cadena) {        
+        var pos = cadena.lastIndexOf(nombrePodcast + " - ");
+        if(pos >= 0) {
+        	return cadena.substring(pos + (nombrePodcast + " - ").length);
+        } else {
+        	return cadena.replace(nombrePodcast, "");
+        }
+        return cadena;
     }
+
     function play(cadena, pos,title,min) {
         $("#audio").attr("src", cadena);
-        //TODO
-        //$("#audio").attr("autoplay", "");
 		$("#audio")[0].currentTime = min;
 		$("#audio")[0].title = limpiaNombre(title);
         $("#titulo").remove();
@@ -28,15 +33,13 @@ $(function () {
     	$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
     	window.scrollTo(0, 0);
     }
-    function buscar(url, nombre) {
+    function buscar(url) {
 		$.ajax({
 			type: 'GET',
 			url: encodeURI(url),
+  			dataType: "text",
 			success: function(data){
-				//lista = data;
 				lista = [];
-
-                //console.log(data);
 
                 data = new window.DOMParser().parseFromString(data, "text/xml");
 
@@ -48,10 +51,11 @@ $(function () {
                 $(".botones").addClass("visto");
 
 				$("#listado").text("");
-				$("#listado").append("<h3>" + nombre + "</h3>");
+				$("#listado").append("<h3>" + nombrePodcast + "</h3>");
 
 				var itemPos = 1;
 				var itemPos = 1;
+
 				//TODO cambiar el orden
 				for (i = 0; i < items.length; i++) {
 				//for (i = items.length-1; i >= 0; i--) {
@@ -81,8 +85,6 @@ $(function () {
 				}
 
                 pos = 0;
-				$("#listado").text("");
-				$("#listado").append("<h3>" + nombre + "</h3>");
 				if (lista.length > 0) {
 
                 	//console.log(lista);                
@@ -112,8 +114,9 @@ $(function () {
 		});
     }
     
-    //buscar("https://anchor.fm/s/90df42ac/podcast/rss","Scorizer");
-    buscar("https://api.rtve.es/api/programas/46690/audios.rss","Fallo de sistema");
+    //buscar("https://anchor.fm/s/90df42ac/podcast/rss"); //,"Scorizer");
+    //buscar("https://api.rtve.es/api/programas/46690/audios.rss"); //,"Fallo de sistema");
+    buscar("http://www.rtve.es/api/programas/176750/audios.rss"); //,"Escalofrios");    
 
     $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
     $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
@@ -128,6 +131,8 @@ $(function () {
     		$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
 		}
   	}
+
+  	$("#tituloPodcast").html(nombrePodcast);
 
 	$("#playLast").on("click", function (x) {
 		play(x.target.dataset.mp3, 0,x.target.dataset.podcast,x.target.dataset.min);
