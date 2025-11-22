@@ -1,7 +1,4 @@
 $(function () {
-  	var nombrePodcast = "Escalofrío";
-    var lista;
-
     function limpiaNombre(cadena) {
     	cadena = cadena.replace("<![CDATA[", "");
     	cadena = cadena.replace(">", "");
@@ -113,17 +110,7 @@ $(function () {
 			}
 		});
     }
-    
-    //buscar("https://anchor.fm/s/90df42ac/podcast/rss"); //,"Scorizer");
-    //buscar("https://api.rtve.es/api/programas/46690/audios.rss"); //,"Fallo de sistema");
-    buscar("http://www.rtve.es/api/programas/176750/audios.rss"); //,"Escalofrios");    
 
-    $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
-    $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
-    $("#playLast")[0].dataset.podcast = localStorage.getItem("_scorizer_title");
-	$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
-	$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
-	
 	function myTimer() {
 		if ($("#audio")[0].duration > 0) {
 			localStorage.setItem("_scorizer_time", parseInt($("#audio")[0].currentTime));
@@ -132,6 +119,19 @@ $(function () {
 		}
   	}
 
+  	var nombrePodcast = "Escalofrío";
+    var lista;
+    
+    //buscar("https://anchor.fm/s/90df42ac/podcast/rss"); //,"Scorizer");
+    //buscar("https://api.rtve.es/api/programas/46690/audios.rss"); //,"Fallo de sistema");
+    buscar("https://www.rtve.es/api/programas/176750/audios.rss"); //,"Escalofrios");    
+
+    $("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
+    $("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
+    $("#playLast")[0].dataset.podcast = localStorage.getItem("_scorizer_title");
+	$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
+	$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
+	
   	$("#tituloPodcast").html(nombrePodcast);
 
 	$("#playLast").on("click", function (x) {
