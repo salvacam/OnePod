@@ -57,7 +57,7 @@ $(function () {
                 $(".botones").addClass("visto");
 
 				$("#listado").text("");
-				$("#listado").append("<h3 style='text-align:center;'>" + nombrePodcast + "</h3>");
+				$("#listado").append("<details open=''><summary>" + nombrePodcast + "</summary><div id='listadoEpisodios'></div>");
 
 				var itemPos = 1;
 				var itemPos = 1;
@@ -96,7 +96,7 @@ $(function () {
                     $(".botones").addClass("visto");
 
 					for (var i = 0; i < lista.length; i++) {
-						$("#listado").append("<button class='btn btn-sm smooth pista' data-pista='" + i + "'>" + lista[i].time + " - " + limpiaUrl(lista[i].title) + "</button><br/>");
+						$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-pista='" + i + "'>" + lista[i].time + " - " + limpiaUrl(lista[i].title) + "</button><br/>");
 					}
 					$(".pista").on("click", function () {
 						play(lista[$(this).data("pista")].r, $(this).data("pista"),lista[$(this).data("pista")].title,0);
@@ -106,6 +106,7 @@ $(function () {
 					customAlert("Error al parsear el feed");
 				}
 
+				$("#listado").append("</details>");
 			},
 			error: function(xhr, type){
 				//TODO intentar obtener el feed con Proxy
