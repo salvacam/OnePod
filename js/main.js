@@ -56,11 +56,8 @@ $(function () {
                 $(".botones").removeClass("none");
                 $(".botones").addClass("visto");
 
-				$("#listado").text("");
-				$("#listado").append("<details open=''><summary>" + nombrePodcast + "</summary><div id='listadoEpisodios'></div>");
-
-				var itemPos = 1;
-				var itemPos = 1;
+				$("#listadoEpisodios").text("");
+				//$("#listado").append("<details open=''><summary>" + nombrePodcast + "</summary><div id='listadoEpisodios'></div>");
 
 				//TODO cambiar el orden
 				for (i = 0; i < items.length; i++) {
@@ -202,7 +199,8 @@ $(function () {
     					$("#feedInput").val(feed);
     					buscar(feed);
   						$("#tituloPodcast").html(nombrePodcast);
-		            } 
+  						$('#configToggle').trigger('click');
+  					} 
 		        });
     	}
     });
