@@ -40,14 +40,16 @@ $(function () {
     	$("#play").trigger("click");
     }
 
-    function buscar(url) {
+    function buscar(url, page) {
+    	var urlFeed = encodeURI(url);
+    	if (page > 1) {
+    		urlFeed = urlFeed + "?&page=" + page;
+    	}
 		$.ajax({
 			type: 'GET',
-			url: encodeURI(url),
+			url: urlFeed,
   			dataType: "text",
 			success: function(data){
-				lista = [];
-
                 data = new window.DOMParser().parseFromString(data, "text/xml");
 
                 const items = data.querySelectorAll("item");
@@ -56,8 +58,9 @@ $(function () {
                 $(".botones").removeClass("none");
                 $(".botones").addClass("visto");
 
-				$("#listadoEpisodios").text("");
-				//$("#listado").append("<details open=''><summary>" + nombrePodcast + "</summary><div id='listadoEpisodios'></div>");
+    			if (page == 1) {    			
+					$("#listadoEpisodios").text("");
+    			}
 
 				//TODO cambiar el orden
 				for (i = 0; i < items.length; i++) {
@@ -81,33 +84,36 @@ $(function () {
     					}
     					
     				});
-    				lista.push({title:limpiaNombre(items[i].querySelector("title").innerHTML), r:items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4), time:duration});    				
-			    	//});
+    				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
+    				var titleAudio = limpiaNombre(items[i].querySelector("title").innerHTML); 
+
+    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudio + "</button><br/>"); 
 				}
 
-				if (lista.length > 0) {
-
-                	//console.log(lista);                
-                    $(".botones").removeClass("none");
-                    $(".botones").addClass("visto");
-
-					for (var i = 0; i < lista.length; i++) {
-						$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-pista='" + i + "'>" + lista[i].time + " - " + limpiaUrl(lista[i].title) + "</button><br/>");
+				if (items.length <= 0) {
+    				if (page == 1) {
+						$("#listado").append("<h5>Error al parsear el feed</h5>");
+						customAlert("Error al parsear el feed");
 					}
-					$(".pista").on("click", function () {
-						play(lista[$(this).data("pista")].r, lista[$(this).data("pista")].title, 0);
-					});
 				} else {
-					$("#listado").append("<h5>Error al parsear el feed</h5>");
-					customAlert("Error al parsear el feed");
+			    	page += 1;
+			    	if (nombrePodcast != "Fallo de sistema") {
+			    		buscar(url, page);
+			    	}
 				}
 
 				$("#listado").append("</details>");
+				
+				$("#listadoEpisodios button").on("click", function (x) {
+					play(x.target.dataset.mp3, x.target.dataset.podcast, 0);
+				});
 			},
 			error: function(xhr, type){
 				//TODO intentar obtener el feed con Proxy
-				$("#listado").append("<h5>Error al obtener el feed</h5>");
-				customAlert("Error al obtener el feed");
+    			if (page == 1) {
+					$("#listado").append("<h5>Error al obtener el feed</h5>");
+					customAlert("Error al obtener el feed");
+    			}
 			}
 		});
     }
@@ -164,7 +170,6 @@ $(function () {
 	  }
 	}
 
-    var lista;
   	
   	var nombrePodcast = "Escalofrío";
 	var nombrePodcastStorage = localStorage.getItem("_scorizer_name");
@@ -180,7 +185,9 @@ $(function () {
 
     $("#nombreInput").val(nombrePodcast);
     $("#feedInput").val(feed);
-    buscar(feed);    
+
+    var page = 1;
+    buscar(feed, page);
   	$("#tituloPodcast").html(nombrePodcast);
 
 	$('#selectFeed').on('change', function () {
@@ -207,7 +214,8 @@ $(function () {
 
 	            	    $("#nombreInput").val(nombrePodcast);
     					$("#feedInput").val(feed);
-    					buscar(feed);
+    					page = 1;
+    					buscar(feed, page);
   						$("#tituloPodcast").html(nombrePodcast);
   						$('#configToggle').trigger('click');
   					} 
