@@ -24,19 +24,20 @@ $(function () {
         return cadena;
     }
 
-    function play(cadena, pos,title,min) {
+    function play(cadena, title, min) {
         $("#audio").attr("src", cadena);
 		$("#audio")[0].currentTime = min;
-		$("#audio")[0].title = limpiaNombre(title);
+		$("#audio")[0].title = title;
         $("#titulo").remove();
-        $("#audioDiv").prepend("<span data-pos='" + pos + "' id='titulo'>" + limpiaNombre(title) + "</span>");
+        $("#audioDiv").prepend("<span id='titulo'>" + title + "</span>");
         localStorage.setItem("_scorizer_mp3", cadena);
     	$("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
-        localStorage.setItem("_scorizer_title", limpiaNombre(title));
-    	$("#lastPodcast").html(localStorage.getItem("_scorizer_title"));
+        localStorage.setItem("_scorizer_title", title);
+    	$("#lastPodcast").html(title);
     	localStorage.setItem("_scorizer_time", min);    	
     	$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
     	window.scrollTo(0, 0);
+    	$("#play").trigger("click");
     }
 
     function buscar(url) {
@@ -51,7 +52,6 @@ $(function () {
 
                 const items = data.querySelectorAll("item");
 
-                pos = 0;
                 i = 0;    
                 $(".botones").removeClass("none");
                 $(".botones").addClass("visto");
@@ -85,7 +85,6 @@ $(function () {
 			    	//});
 				}
 
-                pos = 0;
 				if (lista.length > 0) {
 
                 	//console.log(lista);                
@@ -96,7 +95,7 @@ $(function () {
 						$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-pista='" + i + "'>" + lista[i].time + " - " + limpiaUrl(lista[i].title) + "</button><br/>");
 					}
 					$(".pista").on("click", function () {
-						play(lista[$(this).data("pista")].r, $(this).data("pista"),lista[$(this).data("pista")].title,0);
+						play(lista[$(this).data("pista")].r, lista[$(this).data("pista")].title, 0);
 					});
 				} else {
 					$("#listado").append("<h5>Error al parsear el feed</h5>");
@@ -152,6 +151,17 @@ $(function () {
 	            resolve(false);
 	        });
 	    });
+	}
+
+	function actualizarAvisoConexion() {
+	  var aviso = document.getElementById('offline-warning');
+	  if (navigator.onLine) {
+	    aviso.style.display = 'none';
+		$("#container").removeClass("hide");
+	  } else {
+	    aviso.style.display = 'block';
+	    $("#container").addClass("hide");
+	  }
 	}
 
     var lista;
@@ -219,11 +229,10 @@ $(function () {
 	$("#darkMode").on("change", function () {
 		$("body").toggleClass("dark");
         localStorage.setItem("_scorizer_dark", $('#darkMode').is(':checked'));
-	});
-	
+	});	
 
 	$("#playLast").on("click", function (x) {
-		play(x.target.dataset.mp3, 0,x.target.dataset.podcast,x.target.dataset.min);
+		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min);
 	});
 
 	$("#rewind").on("click", function () {
@@ -245,6 +254,12 @@ $(function () {
 			}	
 		}
 	});
+
+	actualizarAvisoConexion();	
+
+	window.addEventListener('online', actualizarAvisoConexion);
+	window.addEventListener('offline', actualizarAvisoConexion);
+
     setInterval(myTimer, 30000);
 
 	var darkMode = localStorage.getItem("_scorizer_dark");
