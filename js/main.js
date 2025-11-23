@@ -103,12 +103,14 @@ $(function () {
 					});
 				} else {
 					$("#listado").append("<h5>Error al parsear el feed</h5>");
+					customAlert("Error al parsear el feed");
 				}
 
 			},
 			error: function(xhr, type){
 				//TODO intentar obtener el feed con Proxy
 				$("#listado").append("<h5>Error al obtener el feed</h5>");
+				customAlert("Error al obtener el feed");
 			}
 		});
     }
@@ -167,17 +169,18 @@ $(function () {
 	if (feedStorage != null && feedStorage != "") {
 		feed = feedStorage;		
 	}
-    
-    //Scorizer
-    //https://anchor.fm/s/90df42ac/podcast/rss 
-
-    //Fallo de sistema
-    //https://api.rtve.es/api/programas/46690/audios.rss
 
     $("#nombreInput").val(nombrePodcast);
     $("#feedInput").val(feed);
     buscar(feed);    
   	$("#tituloPodcast").html(nombrePodcast);
+
+	$('#selectFeed').on('change', function () {
+		if (this.value != "") {
+    		$('#feedInput').val(this.value);
+    		$('#nombreInput').val(this.options[this.selectedIndex].text);
+    	}
+	});
 
 	$("#editFeed").on("click", function () {
     	var nombreTemp = $('#nombreInput').val();
@@ -185,7 +188,6 @@ $(function () {
     	if (nombreTemp == "" || feedTemp == "") {
 			customAlert("Introduce nombre y rss");
         } else {
-
 		    customConfirm("¿Estás seguro de modificar el feed?")
 		        .then(function(ok) {
 		            if (ok) {
