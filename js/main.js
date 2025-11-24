@@ -1,13 +1,12 @@
 $(function () {
-    function limpiaNombre(cadena) {
+    function limpiaUrl(cadena) {
     	cadena = cadena.replace("<![CDATA[", "");
     	cadena = cadena.replace(">", "");
     	cadena = cadena.replace("]]", "");
     	return cadena;
     }
     
-    function limpiaUrl(cadena) {
-
+    function limpiaNombre(cadena) {
         var pos = cadena.lastIndexOf(nombrePodcast + " - ");
         
         if(pos >= 0) {
@@ -49,7 +48,7 @@ $(function () {
 			type: 'GET',
 			url: urlFeed,
   			dataType: "text",
-			success: function(data){
+			success: function(data) {
                 data = new window.DOMParser().parseFromString(data, "text/xml");
 
                 const items = data.querySelectorAll("item");
@@ -85,9 +84,10 @@ $(function () {
     					
     				});
     				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
-    				var titleAudio = limpiaNombre(items[i].querySelector("title").innerHTML); 
+    				var titleAudio = items[i].querySelector("title").innerHTML; 
+    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
 
-    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudio + "</button><br/>"); 
+    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
 				}
 
 				if (items.length <= 0) {
