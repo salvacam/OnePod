@@ -97,7 +97,7 @@ $(function () {
 					}
 				} else {
 			    	page += 1;
-			    	if (nombrePodcast != "Fallo de sistema") {
+			    	if (nombrePodcast != "Fallo de sistema" && feed.indexOf("salvacam") === -1) {
 			    		buscar(url, page);
 			    	}
 				}
