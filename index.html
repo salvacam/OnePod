@@ -71,6 +71,34 @@
         audio::-webkit-media-controls-volume-slider {
           display: block !important;
         }
+        
+        audio {
+          display: none;
+        }
+        .player-container {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #progress-bar {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+        #time-display-current, #time-display {
+            font-size: 1.2rem;
+            color:#000;background:#e6e6e6
+        }
+
     </style>
     <script src="js/zepto.min.js"></script>
 </head>
@@ -130,6 +158,11 @@
                     <button id="forward" class="btn btn-sm smooth" style="height: 50px; width: 50px;margin-left:50px"></button>
                 </div>
                 <br/>
+                <div class="controls">
+                    <span id="time-display-current">0:00</span>
+                    <input type="range" id="progress-bar" min="0" max="100" value="0">
+                    <span id="time-display">0:00</span>
+                </div>
                 <audio controls id="audio" style="width: 100%"></audio>
                 <hr/>
                 <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4 text-center">
