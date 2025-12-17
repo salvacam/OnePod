@@ -238,6 +238,12 @@ $(function () {
 		$("body").toggleClass("dark");
         localStorage.setItem("_scorizer_dark", $('#darkMode').is(':checked'));
 	});	
+	
+	$("#playerAudio").on("change", function () {
+		$("audio").toggleClass("hide");
+		$("#newPlayerAudio").toggleClass("hide");
+        localStorage.setItem("_playpod_playerAudio", $('#playerAudio').is(':checked'));
+	});
 
 	$("#playLast").on("click", function (x) {
 		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min);
@@ -312,6 +318,13 @@ $(function () {
 	if (darkMode != null && darkMode == "true") {
 		$('#darkMode').prop('checked', true);		
 		$("body").toggleClass("dark");
+	}
+
+	var playerAudio = localStorage.getItem("_playpod_playerAudio");
+	if (playerAudio != null && playerAudio == "true") {		
+		$('#playerAudio').prop('checked', true);
+		$("audio").toggleClass("hide");
+		$("#newPlayerAudio").toggleClass("hide");
 	}
 
 	navigator.mediaSession.setActionHandler('play', () => {

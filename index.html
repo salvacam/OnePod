@@ -72,9 +72,6 @@
           display: block !important;
         }
         
-        audio {
-          display: none;
-        }
         .player-container {
             width: 300px;
             padding: 10px;
@@ -121,6 +118,14 @@
                   <span class="checkmark"></span>
                 </label>
             </div>
+
+
+            <div id="" class="text-center col c6" style="margin-top: 10px;">
+                <label class="checkbox">Reproductor nativo
+                  <input type="checkbox" name="playerAudio" id="playerAudio">
+                  <span class="checkmark"></span>
+                </label>
+            </div>
             <br>
 
             <div id="" class="col c12">
@@ -158,12 +163,12 @@
                     <button id="forward" class="btn btn-sm smooth" style="height: 50px; width: 50px;margin-left:50px"></button>
                 </div>
                 <br/>
-                <div class="controls">
+                <div id="newPlayerAudio" class="controls">
                     <span id="time-display-current">0:00</span>
                     <input type="range" id="progress-bar" min="0" max="100" value="0">
                     <span id="time-display">0:00</span>
                 </div>
-                <audio controls id="audio" style="width: 100%"></audio>
+                <audio class="hide" controls id="audio" style="width: 100%"></audio>
                 <hr/>
                 <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4 text-center">
                     <button id='playLast' class='btn btn-sm smooth botones' data-mp3="" data-podcast="" data-min="">Reanudar audio</button>
