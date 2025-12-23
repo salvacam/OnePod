@@ -171,13 +171,13 @@ $(function () {
 	}
 
   	
-  	var nombrePodcast = "Escalofrío";
+  	var nombrePodcast = "Fallo de sistema";
 	var nombrePodcastStorage = localStorage.getItem("_scorizer_name");
 	if (nombrePodcastStorage != null && nombrePodcastStorage != "") {
 		nombrePodcast = nombrePodcastStorage;		
 	}
 
-    var feed = "https://api.rtve.es/api/programas/176750/audios.rss";
+    var feed = "https://api.rtve.es/api/programas/46690/audios.rss";
 	var feedStorage = localStorage.getItem("_scorizer_feed");
 	if (feedStorage != null && feedStorage != "") {
 		feed = feedStorage;		
