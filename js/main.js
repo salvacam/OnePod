@@ -81,7 +81,7 @@ $(function () {
 						console.log("page: "+page);
 						console.log("pageListen: "+pageListen);
 						console.log("----");
-						if ((hideListen != null || hideListen == "false" || nombrePodcast == "Fallo de sistema") 
+						if ((hideListen != null || hideListen == "false" || nombrePodcast != "Fallo de sistema") 
 							&& i >= numberListen && page >= pageListen) {
 							console.log("se debe mostar: "+i);
 
