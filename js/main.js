@@ -81,8 +81,9 @@ $(function () {
 						console.log("page: "+page);
 						console.log("pageListen: "+pageListen);
 						console.log("----");
-						if ((hideListen != null || hideListen == "false" || nombrePodcast != "Fallo de sistema") 
-							&& i >= numberListen && page >= pageListen) {
+						if (nombrePodcast == "Fallo de sistema"
+							|| ((hideListen != null || hideListen == "false") 
+							&& i >= numberListen && page >= pageListen)) {
 							console.log("se debe mostar: "+i);
 
 		    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
