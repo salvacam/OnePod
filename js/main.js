@@ -23,7 +23,7 @@ $(function () {
         return cadena;
     }
 
-    function play(cadena, title, min, number, page) {
+    function play(cadena, title, min, number, page, name) {
         $("#audio").attr("src", cadena);
 		$("#audio")[0].currentTime = min;
 		$("#audio")[0].title = title;
@@ -35,102 +35,104 @@ $(function () {
     	$("#lastPodcast").html(title);
     	localStorage.setItem("_scorizer_time", min);
     	localStorage.setItem("_scorizer_number", number);
+    	$("#playLast")[0].dataset.number = number;
     	localStorage.setItem("_scorizer_page", page);
+    	$("#playLast")[0].dataset.page = page;
+    	localStorage.setItem("_scorizer_podcast", name);
+    	$("#playLast")[0].dataset.podcast = name;
     	$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
     	window.scrollTo(0, 0);
     	$("#play").trigger("click");
     }
 
-    function buscar(url, page) {
+    function buscar(url, page, nombrePodcast) {
 
 		var hideListen = localStorage.getItem("_scorizer_hideListen");
     	var numberListen = localStorage.getItem("_scorizer_number");
     	var pageListen = localStorage.getItem("_scorizer_page");
+    	var podcastListen = localStorage.getItem("_scorizer_podcast");
 
     	var urlFeed = encodeURI(url);
     	if (page > 1) {
     		urlFeed = urlFeed + "?&page=" + page;
     	}
 
-    	//if (page >= pageListen) {
-			$.ajax({
-				type: 'GET',
-				url: urlFeed,
-	  			dataType: "text",
-				success: function(data) {
-	                data = new window.DOMParser().parseFromString(data, "text/xml");
+		$.ajax({
+			type: 'GET',
+			url: urlFeed,
+  			dataType: "text",
+			success: function(data) {
+                data = new window.DOMParser().parseFromString(data, "text/xml");
 
-	                const items = data.querySelectorAll("item");
+                const items = data.querySelectorAll("item");
 
-	                i = 0;    
-	                $(".botones").removeClass("none");
-	                $(".botones").addClass("visto");
+                i = 0;    
+                $(".botones").removeClass("none");
+                $(".botones").addClass("visto");
 
-	    			if (page == 1) {    			
-						$("#listadoEpisodios").text("");
-	    			}
+    			if (page == 1) {    			
+					$("#listadoEpisodios").text("");
+    			}
 
-					//TODO cambiar el orden
-					for (i = 0; i < items.length; i++) {
-					//for (i = items.length-1; i >= 0; i--) {
-						if (nombrePodcast == "Fallo de sistema"
-							|| ((hideListen != null || hideListen == "false") 
-							&& i >= numberListen && page >= pageListen)) {
+				//TODO cambiar el orden
+				for (i = 0; i < items.length; i++) {
+				//for (i = items.length-1; i >= 0; i--) {
+					if (nombrePodcast == "Fallo de sistema" || (hideListen != null && hideListen == "false") || podcastListen != nombrePodcast 
+						|| (i >= numberListen && page >= pageListen)) {
 
-		    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
-		    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
-		    				if (inicio != -1 && fin == -1) {
-		    					//console.log(el.querySelector("enclosure").outerHTML);
-								fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.m4a');
-		    				}
-							
-							var duration = 0;
-
-							items[i].childNodes.forEach(x => { 
-								//console.log(x);
-								
-		    					if (x.innerHTML != undefined) {
-		    					 	if (x.outerHTML.indexOf('duration') > 0) {
-			    						duration = x.innerHTML;
-		    						}
-		    					}
-		    					
-		    				});
-		    				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
-		    				var titleAudio = items[i].querySelector("title").innerHTML; 
-		    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
-
-		    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-number='"+ i + "' data-page='"+ page +"' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
+	    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
+	    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
+	    				if (inicio != -1 && fin == -1) {
+	    					//console.log(el.querySelector("enclosure").outerHTML);
+							fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.m4a');
 	    				}
-					}
+						
+						var duration = 0;
 
-					if (items.length <= 0) {
-	    				if (page == 1) {
-							$("#listado").append("<h5>Error al parsear el feed</h5>");
-							customAlert("Error al parsear el feed");
-						}
-					} else {
-				    	page += 1;
-				    	if (nombrePodcast != "Fallo de sistema" && feed.indexOf("salvacam") === -1) {
-				    		buscar(url, page);
-				    	}
-					}
+						items[i].childNodes.forEach(x => { 
+							//console.log(x);
+							
+	    					if (x.innerHTML != undefined) {
+	    					 	if (x.outerHTML.indexOf('duration') > 0) {
+		    						duration = x.innerHTML;
+	    						}
+	    					}
+	    					
+	    				});
+	    				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
+	    				var titleAudio = items[i].querySelector("title").innerHTML; 
+	    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
 
-					$("#listado").append("</details>");
-					
-					$("#listadoEpisodios button").on("click", function (x) {
-						play(x.target.dataset.mp3, x.target.dataset.podcast, 0, x.target.dataset.number,x.target.dataset.page);
-					});
-				},
-				error: function(xhr, type){
-					//TODO intentar obtener el feed con Proxy
-	    			if (page == 1) {
-						$("#listado").append("<h5>Error al obtener el feed</h5>");
-						customAlert("Error al obtener el feed");
-	    			}
+	    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-number='"+ i + "' data-page='"+ page +"' data-name='"+nombrePodcast+"' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
+    				}
 				}
-			});
-		//}
+
+				if (items.length <= 0) {
+    				if (page == 1) {
+						$("#listado").append("<h5>Error al parsear el feed</h5>");
+						customAlert("Error al parsear el feed");
+					}
+				} else {
+			    	page += 1;
+			    	if (nombrePodcast != "Fallo de sistema" && feed.indexOf("salvacam") === -1) {
+			    		buscar(url, page, nombrePodcast);
+			    	}
+				}
+
+				$("#listado").append("</details>");
+				
+				$("#listadoEpisodios button").on("click", function (x) {
+					play(x.target.dataset.mp3, x.target.dataset.podcast, 0, x.target.dataset.number,x.target.dataset.page, x.target.dataset.name);
+				});
+			},
+			error: function(xhr, type){
+				//TODO intentar obtener el feed con Proxy
+    			if (page == 1) {
+					$("#listado").append("<h5>Error al obtener el feed</h5>");
+					customAlert("Error al obtener el feed");
+    			}
+			}
+		});
     }
 
 	function myTimer() {
@@ -202,7 +204,7 @@ $(function () {
     $("#feedInput").val(feed);
 
     var page = 1;
-    buscar(feed, page);
+    buscar(feed, page, nombrePodcast);
   	$("#tituloPodcast").html(nombrePodcast);
 
 	$('#selectFeed').on('change', function () {
@@ -230,7 +232,7 @@ $(function () {
 	            	    $("#nombreInput").val(nombrePodcast);
     					$("#feedInput").val(feed);
     					page = 1;
-    					buscar(feed, page);
+    					buscar(feed, page, nombrePodcast);
   						$("#tituloPodcast").html(nombrePodcast);
   						$('#configToggle').trigger('click');
   					} 
@@ -243,6 +245,9 @@ $(function () {
     $("#playLast")[0].dataset.podcast = localStorage.getItem("_scorizer_title");
 	$("#lastTime").html(parseInt(localStorage.getItem("_scorizer_time")/60));
 	$("#playLast")[0].dataset.min = localStorage.getItem("_scorizer_time");
+	$("#playLast")[0].dataset.name = localStorage.getItem("_scorizer_podcast");
+	$("#playLast")[0].dataset.number = localStorage.getItem("_scorizer_number");
+	$("#playLast")[0].dataset.page = localStorage.getItem("_scorizer_page");
 
     $('#configToggle').on('click', function() {
         $('#config').toggleClass('show');
@@ -265,7 +270,7 @@ $(function () {
 	});
 
 	$("#playLast").on("click", function (x) {
-		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min, x.target.dataset.number, x.target.dataset.page);
+		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min, x.target.dataset.number, x.target.dataset.page, x.target.dataset.name);
 	});
 
 	$("#rewind").on("click", function () {
