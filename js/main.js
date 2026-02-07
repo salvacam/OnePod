@@ -73,18 +73,9 @@ $(function () {
 					//TODO cambiar el orden
 					for (i = 0; i < items.length; i++) {
 					//for (i = items.length-1; i >= 0; i--) {
-						
-						//TODO No mostrar si se ha escuchado y esta activo el check
-						console.log("hideListen: " + hideListen);
-						console.log("i: "+i);
-						console.log("numberListen: "+numberListen);
-						console.log("page: "+page);
-						console.log("pageListen: "+pageListen);
-						console.log("----");
 						if (nombrePodcast == "Fallo de sistema"
 							|| ((hideListen != null || hideListen == "false") 
 							&& i >= numberListen && page >= pageListen)) {
-							console.log("se debe mostar: "+i);
 
 		    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
 		    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
