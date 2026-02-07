@@ -23,7 +23,7 @@ $(function () {
         return cadena;
     }
 
-    function play(cadena, title, min) {
+    function play(cadena, title, min, number, page) {
         $("#audio").attr("src", cadena);
 		$("#audio")[0].currentTime = min;
 		$("#audio")[0].title = title;
@@ -33,89 +33,112 @@ $(function () {
     	$("#playLast")[0].dataset.mp3 = localStorage.getItem("_scorizer_mp3");
         localStorage.setItem("_scorizer_title", title);
     	$("#lastPodcast").html(title);
-    	localStorage.setItem("_scorizer_time", min);    	
+    	localStorage.setItem("_scorizer_time", min);
+    	localStorage.setItem("_scorizer_number", number);
+    	localStorage.setItem("_scorizer_page", page);
     	$("#lastTime").html(parseInt(parseInt($("#audio")[0].currentTime)/60));
     	window.scrollTo(0, 0);
     	$("#play").trigger("click");
     }
 
     function buscar(url, page) {
+
+		var hideListen = localStorage.getItem("_scorizer_hideListen");
+    	var numberListen = localStorage.getItem("_scorizer_number");
+    	var pageListen = localStorage.getItem("_scorizer_page");
+
     	var urlFeed = encodeURI(url);
     	if (page > 1) {
     		urlFeed = urlFeed + "?&page=" + page;
     	}
-		$.ajax({
-			type: 'GET',
-			url: urlFeed,
-  			dataType: "text",
-			success: function(data) {
-                data = new window.DOMParser().parseFromString(data, "text/xml");
 
-                const items = data.querySelectorAll("item");
+    	//if (page >= pageListen) {
+			$.ajax({
+				type: 'GET',
+				url: urlFeed,
+	  			dataType: "text",
+				success: function(data) {
+	                data = new window.DOMParser().parseFromString(data, "text/xml");
 
-                i = 0;    
-                $(".botones").removeClass("none");
-                $(".botones").addClass("visto");
+	                const items = data.querySelectorAll("item");
 
-    			if (page == 1) {    			
-					$("#listadoEpisodios").text("");
-    			}
+	                i = 0;    
+	                $(".botones").removeClass("none");
+	                $(".botones").addClass("visto");
 
-				//TODO cambiar el orden
-				for (i = 0; i < items.length; i++) {
-				//for (i = items.length-1; i >= 0; i--) {
-    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
-    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
-    				if (inicio != -1 && fin == -1) {
-    					//console.log(el.querySelector("enclosure").outerHTML);
-						fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.m4a');
-    				}
-					
-					var duration = 0;
+	    			if (page == 1) {    			
+						$("#listadoEpisodios").text("");
+	    			}
 
-					items[i].childNodes.forEach(x => { 
-						//console.log(x);
+					//TODO cambiar el orden
+					for (i = 0; i < items.length; i++) {
+					//for (i = items.length-1; i >= 0; i--) {
 						
-    					if (x.innerHTML != undefined) {
-    					 	if (x.outerHTML.indexOf('duration') > 0) {
-	    						duration = x.innerHTML;
-    						}
-    					}
-    					
-    				});
-    				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
-    				var titleAudio = items[i].querySelector("title").innerHTML; 
-    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
+						//TODO No mostrar si se ha escuchado y esta activo el check
+						console.log("hideListen: " + hideListen);
+						console.log("i: "+i);
+						console.log("numberListen: "+numberListen);
+						console.log("page: "+page);
+						console.log("pageListen: "+pageListen);
+						console.log("----");
+						if ((hideListen != null || hideListen == "false" || nombrePodcast == "Fallo de sistema") 
+							&& i >= numberListen && page >= pageListen) {
+							console.log("se debe mostar: "+i);
 
-    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
-				}
+		    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
+		    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
+		    				if (inicio != -1 && fin == -1) {
+		    					//console.log(el.querySelector("enclosure").outerHTML);
+								fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.m4a');
+		    				}
+							
+							var duration = 0;
 
-				if (items.length <= 0) {
-    				if (page == 1) {
-						$("#listado").append("<h5>Error al parsear el feed</h5>");
-						customAlert("Error al parsear el feed");
+							items[i].childNodes.forEach(x => { 
+								//console.log(x);
+								
+		    					if (x.innerHTML != undefined) {
+		    					 	if (x.outerHTML.indexOf('duration') > 0) {
+			    						duration = x.innerHTML;
+		    						}
+		    					}
+		    					
+		    				});
+		    				var urlAudio = limpiaUrl(items[i].querySelector("enclosure").outerHTML.toString().substring(inicio+5, fin+4));
+		    				var titleAudio = items[i].querySelector("title").innerHTML; 
+		    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
+
+		    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-number='"+ i + "' data-page='"+ page +"' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
+	    				}
 					}
-				} else {
-			    	page += 1;
-			    	if (nombrePodcast != "Fallo de sistema" && feed.indexOf("salvacam") === -1) {
-			    		buscar(url, page);
-			    	}
-				}
 
-				$("#listado").append("</details>");
-				
-				$("#listadoEpisodios button").on("click", function (x) {
-					play(x.target.dataset.mp3, x.target.dataset.podcast, 0);
-				});
-			},
-			error: function(xhr, type){
-				//TODO intentar obtener el feed con Proxy
-    			if (page == 1) {
-					$("#listado").append("<h5>Error al obtener el feed</h5>");
-					customAlert("Error al obtener el feed");
-    			}
-			}
-		});
+					if (items.length <= 0) {
+	    				if (page == 1) {
+							$("#listado").append("<h5>Error al parsear el feed</h5>");
+							customAlert("Error al parsear el feed");
+						}
+					} else {
+				    	page += 1;
+				    	if (nombrePodcast != "Fallo de sistema" && feed.indexOf("salvacam") === -1) {
+				    		buscar(url, page);
+				    	}
+					}
+
+					$("#listado").append("</details>");
+					
+					$("#listadoEpisodios button").on("click", function (x) {
+						play(x.target.dataset.mp3, x.target.dataset.podcast, 0, x.target.dataset.number,x.target.dataset.page);
+					});
+				},
+				error: function(xhr, type){
+					//TODO intentar obtener el feed con Proxy
+	    			if (page == 1) {
+						$("#listado").append("<h5>Error al obtener el feed</h5>");
+						customAlert("Error al obtener el feed");
+	    			}
+				}
+			});
+		//}
     }
 
 	function myTimer() {
@@ -238,6 +261,10 @@ $(function () {
 		$("body").toggleClass("dark");
         localStorage.setItem("_scorizer_dark", $('#darkMode').is(':checked'));
 	});	
+
+	$("#hideListen").on("change", function () {
+        localStorage.setItem("_scorizer_hideListen", $('#hideListen').is(':checked'));
+	});	
 	
 	$("#playerAudio").on("change", function () {
 		$("audio").toggleClass("hide");
@@ -246,7 +273,7 @@ $(function () {
 	});
 
 	$("#playLast").on("click", function (x) {
-		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min);
+		play(x.target.dataset.mp3, x.target.dataset.podcast, x.target.dataset.min, x.target.dataset.number, x.target.dataset.page);
 	});
 
 	$("#rewind").on("click", function () {
@@ -318,6 +345,11 @@ $(function () {
 	if (darkMode != null && darkMode == "true") {
 		$('#darkMode').prop('checked', true);		
 		$("body").toggleClass("dark");
+	}
+	
+	var hideListen = localStorage.getItem("_scorizer_hideListen");
+	if (hideListen != null && hideListen == "true") {
+		$('#hideListen').prop('checked', true);
 	}
 
 	var playerAudio = localStorage.getItem("_playpod_playerAudio");
