@@ -77,8 +77,24 @@ $(function () {
 				//TODO cambiar el orden
 				for (i = 0; i < items.length; i++) {
 				//for (i = items.length-1; i >= 0; i--) {
+
+					/*
+					if (page==2){
+
+					console.log("nombrePodcast: "+nombrePodcast); 
+					console.log("hideListen: "+hideListen); 
+					console.log("podcastListen: "+podcastListen); 
+					console.log("i: "+i); 
+					console.log("numberListen: "+numberListen); 
+					console.log("page: "+page); 
+					console.log("pageListen: "+pageListen); 
+
+					console.log(nombrePodcast == "Fallo de sistema" || (hideListen != null && hideListen == "false") || podcastListen != nombrePodcast|| (i >= numberListen && page >= pageListen) || page > pageListen);
+					}
+					*/
+
 					if (nombrePodcast == "Fallo de sistema" || (hideListen != null && hideListen == "false") || podcastListen != nombrePodcast 
-						|| (i >= numberListen && page >= pageListen)) {
+						|| page > pageListen || (i >= numberListen && page == pageListen)) {
 
 	    				var inicio = items[i].querySelector("enclosure").outerHTML.toString().indexOf('url="');
 	    				var fin = items[i].querySelector("enclosure").outerHTML.toString().indexOf('.mp3');
@@ -104,6 +120,8 @@ $(function () {
 	    				var titleAudioClean = limpiaNombre(items[i].querySelector("title").innerHTML); 
 
 	    				$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-number='"+ i + "' data-page='"+ page +"' data-name='"+nombrePodcast+"' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + "</button><br/>"); 
+
+	    				//$("#listadoEpisodios").append("<button class='btn btn-sm smooth pista' data-number='"+ i + "' data-page='"+ page +"' data-name='"+nombrePodcast+"' data-mp3='"+urlAudio+"' data-podcast='"+titleAudio+"'>" + duration + " - " + titleAudioClean + " [i: "+ i + " page: " + page + "] " + "</button><br/>"); 
     				}
 				}
 
